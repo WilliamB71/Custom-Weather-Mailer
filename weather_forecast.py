@@ -1,5 +1,7 @@
 import requests
 from utils import unix_to_dt, increment_day_dt, temp_desc, weather_desc, wind_desc
+import arrow
+
 
 
 class Weather:
@@ -25,10 +27,9 @@ class Weather:
         sunrise_dts = {i: increment_day_dt(sunrise, days=i) for i in range(3)}
         sunset_dts = {i: increment_day_dt(sunset, days=i) for i in range(3)}
 
-        three_day_forecast = {'today': [],
-                              'tomorrow': [], 'Day after Tomorrow': []}
-        formatted_forecast = {'today': {},
-                              'tomorrow': {}, 'Day after Tomorrow': {}}
+        three_day_forecast = {arrow.now().format('DD-MM'): [],
+                              arrow.now().shift(days=1).format('DD-MM'): [], arrow.now().shift(days=2).format('DD-MM'): []}
+        formatted_forecast = {date: {} for date in three_day_forecast}
 
         for int_key in sunrise_dts:
             for forecast in weather_raw:

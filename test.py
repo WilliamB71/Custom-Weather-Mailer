@@ -6,8 +6,7 @@ from email.mime.image import MIMEImage
 from email.mime.application import MIMEApplication
 
 # dictionary with weather parameters
-weather_dict = {'today': {}, 'tomorrow': {'Temperature': '4.9°C - 6.5°C', 'Weather Description': ['09:00: light rain', '12:00: light rain', '15:00: overcast clouds'], 'Wind Speed': '17.0 mph - 18.3 mph'}, 'day_after_tomorrow': {
-    'Temperature': '5.0°C - 8.2°C', 'Weather Description': ['09:00: overcast clouds', '12:00: overcast clouds', '15:00: light rain'], 'Wind Speed': '8.4 mph - 13.8 mph'}}
+weather_dict = {'28-02': {'Temperature': '7.7°C - 7.7°C', 'Weather Description': ['15:00: light rain'], 'Wind Speed': '15.1 mph - 15.1 mph'}, '01-03': {'Temperature': '5.3°C - 6.9°C', 'Weather Description': ['09:00: broken clouds', '12:00: overcast clouds', '15:00: overcast clouds'], 'Wind Speed': '12.9 mph - 13.6 mph'}, '2023-03-02 13:15:47+00:00': {'Temperature': '3.8°C - 8.8°C', 'Weather Description': ['09:00: few clouds', '12:00: clear sky', '15:00: clear sky'], 'Wind Speed': '10.1 mph - 12.2 mph'}}
 
 
 def weather_to_html_table(weather_dict):
@@ -28,7 +27,7 @@ def weather_to_html_table(weather_dict):
 
 html_table = weather_to_html_table(weather_dict)
 
-
+print(html_table)
 
 
 # create email message
