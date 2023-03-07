@@ -1,6 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
-from statistics import median
+
 
 degree_sign = u'\N{DEGREE SIGN}'
 
