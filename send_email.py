@@ -6,7 +6,6 @@ from email.mime.image import MIMEImage
 from weather_forecast import Weather
 from wave_forecast import StormGlass
 from beach_image import Image
-# dictionary with weather parameters
 
 
 class SendEmail:
@@ -23,7 +22,7 @@ class SendEmail:
             msg['From'] = 'canfordcliffsforecast@gmail.com'
             msg['To'] = str(recipent)
             msg.attach(MIMEText(html_table, 'html'))
-            with open('Beach_Image.png', 'rb') as f:
+            with open('/tmp/Beach_Image.png', 'rb') as f:
                 bournemouth_image = MIMEImage(f.read())
                 bournemouth_image.add_header(
                     'Content-Disposition', 'attachment', filename="Bournemouth_Pier.png")
