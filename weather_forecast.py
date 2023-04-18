@@ -1,5 +1,5 @@
 import requests
-from utils import unix_to_dt, increment_day_dt, temp_desc, weather_desc, wind_desc
+from utils import unix_to_dt, increment_day_dt, temp_desc, weather_desc, wind_desc, icon_desc
 import arrow
 
 
@@ -19,42 +19,35 @@ class Weather:
         return sunrise, sunset
 
     def report():
+        ret_dict = {}
         data = Weather.data()
         sunrise, sunset = Weather.daylight_times()
         weather_raw = data['list']
 
-        sunrise_dts = {i: increment_day_dt(sunrise, days=i) for i in range(3)}
-        sunset_dts = {i: increment_day_dt(sunset, days=i) for i in range(3)}
+        sunrise_dts = {i: increment_day_dt(sunrise, days=i) for i in range(5)}
+        sunset_dts = {i: increment_day_dt(sunset, days=i) for i in range(5)}
 
-        three_day_forecast = {arrow.now().format('DD-MM'): [],
-                              arrow.now().shift(days=1).format('DD-MM'): [], arrow.now().shift(days=2).format('DD-MM'): []}
-        formatted_forecast = {date: {} for date in three_day_forecast}
+        five_day_forecast = {arrow.now().shift(days=i).format('DD-MM'): [] for i in range(0, 5)}
+
+        formatted_forecast = {date: {} for date in five_day_forecast}
 
         for int_key in sunrise_dts:
             for forecast in weather_raw:
                 if sunrise_dts[int_key] <= unix_to_dt(forecast['dt']) <= sunset_dts[int_key]:
-                    three_day_forecast[list(three_day_forecast.keys())[
+                    five_day_forecast[list(five_day_forecast.keys())[
                         int_key]].append(forecast)
 
         for day_key in formatted_forecast:
-            if three_day_forecast[day_key]:
+            if five_day_forecast[day_key]:
                 formatted_forecast[day_key]['Temperature'] = temp_desc(
-                    three_day_forecast[day_key])
+                    five_day_forecast[day_key])
                 formatted_forecast[day_key]['Weather Description'] = weather_desc(
-                    three_day_forecast[day_key])
+                    five_day_forecast[day_key])
                 formatted_forecast[day_key]['Wind Speed'] = wind_desc(
-                    three_day_forecast[day_key])
+                    five_day_forecast[day_key])
+                formatted_forecast[day_key]['icon_id'] = icon_desc(five_day_forecast[day_key])
 
-        return formatted_forecast
+        for i, weather_report in enumerate(formatted_forecast.values()):
+            ret_dict[i] = weather_report
 
-    def html_table():
-        weather_dict = Weather.report()
-        table = "<table style='border-collapse: collapse; width: 80%; margin: auto; font-family: sans-serif;'>"
-        table += "<tr style='background-color: #0099cc; color: white; text-align: center;'><th style='padding: 10px;'>Day</th><th style='padding: 10px;'>Temperature</th><th style='padding: 10px;'>Weather Description</th><th style='padding: 10px;'>Wind Speed</th></tr>"
-        for day, weather in weather_dict.items():
-            temp = weather.get('Temperature', '')
-            weather_desc = "<br>".join(weather.get('Weather Description', []))
-            wind_speed = weather.get('Wind Speed', '')
-            table += f"<tr style='text-align: center;'><td style='padding: 10px; background-color: #f2f2f2;'>{day.title()}</td><td style='padding: 10px;'>{temp}</td><td style='padding: 10px; text-align: left;'>{weather_desc}</td><td style='padding: 10px;'>{wind_speed}</td></tr>"
-        table += "</table>"
-        return table
+        return ret_dict

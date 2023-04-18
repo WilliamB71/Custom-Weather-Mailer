@@ -8,6 +8,7 @@ from utils import m_s_to_mph
 class StormGlass(Weather):
 
     def data():
+        ret_dict = {}
         sunrise, sunset = StormGlass.daylight_times()
         timezone = 'Europe/London'
         start = arrow.now(tz=timezone).floor('day')
@@ -46,59 +47,26 @@ class StormGlass(Weather):
 
         ocean_data_clean = {date: {} for date in ocean_data_raw}
 
-        for day, data in ocean_data_raw.items():
+        for day, data_list in ocean_data_raw.items():
             for param in parameters:
-                values = []
-                for timestamp in data:
-                    values.append(statistics.median(
-                        timestamp.get(param).values()))
-                ocean_data_clean[day][param] = (min(values), max(values))
-        return ocean_data_clean
+                day_values = []
+                for timestamp in data_list:
+                    if param == 'windSpeed':
+                        try:
+                            day_values.append(m_s_to_mph(
+                                timestamp[param]['meto']))
+                        except:
+                            day_values.append(
+                                m_s_to_mph(timestamp[param]['sg']))
+                    else:
+                        try:
+                            day_values.append(timestamp[param]['meto'])
+                        except:
+                            day_values.append(timestamp[param]['sg'])
 
-    def report():
-        wave_dict = StormGlass.data()
-        humanise_parameter = {'windSpeed': 'Wind Speed (mph)', 'windWaveHeight': 'Wind Wave Height (ft)',
-                              'waterTemperature': 'Water Temperature (°C)', 'waveHeight': 'Wave Height (ft)', 'wavePeriod': 'Wave Period (s)'}
-        return_report = {day: {} for day in wave_dict}
+                ocean_data_clean[day][param] = f"{round(min(day_values), 1)} - {round(max(day_values), 1)}"
 
-        for day in wave_dict:
-            for key in humanise_parameter:
-                data = wave_dict[day][key]
-                if data:
-                    string_data = f"{round(data[0], 1)} - {round(data[1], 1)}"
-                    if key == 'windSpeed':
-                        string_data = f"{m_s_to_mph(data[0])} - {round(m_s_to_mph(data[1]), 1)}"
-                    return_report[day][humanise_parameter[key]] = string_data
-        return return_report
+        for i, forecast_data in enumerate(ocean_data_clean.values()):
+            ret_dict[i] = forecast_data
 
-    def html_table():
-        report = StormGlass.report()
-        output_html = ''
-
-        def html_formatter(weather_dict):
-            table = "<table style='border-collapse: collapse; width: 80%; margin: auto; font-family: sans-serif;'>"
-            table += "<tr style='background-color: #0099cc; color: white; text-align: center;'><th style='padding: 10px;'>Date</th><th style='padding: 10px;'>Wave Height (ft)</th><th style='padding: 10px;'>Wind Wave Height (ft)</th><th style='padding: 10px;'>Wave Period (s)</th><th style='padding: 10px;'>Wind Speed (mph)</th><th style='padding: 10px;'>Water Temperature (°C)</th></tr>"
-
-            # Loop through each day's weather data
-            for date, data in weather_dict.items():
-                # Get the wind speed, wind wave height, water temperature, wave height, and wave period for the day
-                wind_speed = data.get('Wind Speed (mph)', '')
-                wind_wave_height = data.get('Wind Wave Height (ft)', '')
-                water_temperature = data.get('Water Temperature (°C)', '')
-                wave_height = data.get('Wave Height (ft)', '')
-                wave_period = data.get('Wave Period (s)', '')
-
-                # Add the data to the table row
-                table += f"<tr style='text-align: center;'><td style='padding: 10px; background-color: #f2f2f2;'>{date.title()}</td><td style='padding: 10px;'>{wave_height}</td><td style='padding: 10px;'>{wind_wave_height}</td><td style='padding: 10px;'>{wave_period}</td><td style='padding: 10px;'>{wind_speed}</td><td style='padding: 10px;'>{water_temperature}</td></tr>"
-
-            # Close the HTML table
-            table += "</table>"
-
-            # Return the HTML table
-            return table
-
-        for date, values in report.items():
-            output_html += html_formatter({date: values})
-            output_html += "<br>"
-
-        return output_html
+        return ret_dict
