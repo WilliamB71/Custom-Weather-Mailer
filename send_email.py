@@ -20,7 +20,7 @@ class SendEmail:
             msg['From'] = 'canfordcliffsforecast@gmail.com'
             msg['To'] = str(recipent)
             msg.attach(MIMEText(Email_Content.write(), 'html'))
-            with open('./tmp/Beach_Image.png', 'rb') as f:
+            with open('/tmp/Beach_Image.png', 'rb') as f:
                 image = MIMEImage(f.read())
                 msg.attach(image)
             image.add_header('Content-ID', '<Beach_Image.png>')
