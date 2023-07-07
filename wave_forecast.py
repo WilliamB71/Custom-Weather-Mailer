@@ -25,7 +25,7 @@ class StormGlass(Weather):
                 'start': start.to('UTC').timestamp(),
                 'end': end.to('UTC').timestamp()},
             headers={
-                'Authorization': '89cca680-b29a-11ed-a654-0242ac130002-89cca6f8-b29a-11ed-a654-0242ac130002'
+                'Authorization': 'examplekey'
             })
 
         json_data = response.json()

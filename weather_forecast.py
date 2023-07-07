@@ -5,7 +5,7 @@ import arrow
 
 class Weather:
     def data():
-        API_key = 'f4c16045c21419f2605536881085186b'
+        API_key = 'examplekey'
         lat = '50.703'
         lon = '-1.923'
         URL = f'http://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API_key}'

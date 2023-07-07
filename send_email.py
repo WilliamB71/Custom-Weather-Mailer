@@ -17,7 +17,7 @@ class SendEmail:
 
             msg = MIMEMultipart()
             msg['Subject'] = f'Bodley Weather Report {arrow.now(tz=timezone).format("DD-MM")}'
-            msg['From'] = 'canfordcliffsforecast@gmail.com'
+            msg['From'] = 'examplesender@email.com'
             msg['To'] = str(recipent)
             msg.attach(MIMEText(Email_Content.write(), 'html'))
             with open('/tmp/Beach_Image.png', 'rb') as f:
@@ -29,11 +29,11 @@ class SendEmail:
             # send email
             smtp_server = 'smtp.gmail.com'
             smtp_port = 587
-            smtp_username = 'canfordcliffsforecast@gmail.com'
-            smtp_password = 'drdnekpfwcxcxsbk'
+            smtp_username = 'examplesender@email.com'
+            smtp_password = 'ExamplePassword'
             smtp_conn = smtplib.SMTP(smtp_server, smtp_port)
             smtp_conn.starttls()
             smtp_conn.login(smtp_username, smtp_password)
-            smtp_conn.sendmail('canfordcliffsforecast@gmail.com',
+            smtp_conn.sendmail('examplesender@email.com',
                                str(recipent), msg.as_string())
             smtp_conn.quit()
